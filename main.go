@@ -43,6 +43,8 @@ func main() {
 
 	bj = os.Getenv("BJ_ID")
 
+	oscClient = osc.NewClient("localhost", 19190)
+
 	checkStream()
 }
 
@@ -135,7 +137,11 @@ func watchChat(station Station) error {
 }
 
 func setupChat(token afreecachat.Token) error {
-	chatClient = afreecachat.NewClient(token)
+	var err error
+	chatClient, err = afreecachat.NewClient(token)
+	if err != nil {
+		return err
+	}
 	chatClient.SocketAddress = socketUrl
 
 	chatClient.OnConnect(func(connect bool) {
@@ -145,9 +151,10 @@ func setupChat(token afreecachat.Token) error {
 	})
 
 	chatClient.OnBalloon(func(balloon afreecachat.Balloon) {
+		log.Printf("nick : %s, count : %d\n", balloon.User.Name, balloon.Count)
 		msg := osc.NewMessage("/osc/ballon")
 		msg.Append(balloon.User.Name)
-		msg.Append(balloon.Count)
+		msg.Append(int32(balloon.Count))
 		err := oscClient.Send(msg)
 		if err != nil {
 			log.Printf("OnBalloon error : %s\n", err.Error())

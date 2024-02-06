@@ -15,3 +15,5 @@ require (
 	github.com/tidwall/gjson v1.17.0
 	golang.org/x/net v0.17.0 // indirect
 )
+
+replace github.com/devhalfdog/afreecachat => C:\workspace\project\afreecachat
