@@ -6,17 +6,18 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"os"
 	"strconv"
 	"strings"
 	"time"
 
 	"github.com/devhalfdog/afreecachat"
 	"github.com/hypebeast/go-osc/osc"
+	"github.com/joho/godotenv"
 	"github.com/tidwall/gjson"
 )
 
 const (
-	bj         = "243000"
 	stationUrl = "https://bjapi.afreecatv.com/api/%s/station"
 	infoUrl    = "https://api.m.afreecatv.com/broad/a/watch"
 	dataUrl    = "https://live.afreecatv.com/afreeca/player_live_api.php?bjid=%s"
@@ -31,9 +32,17 @@ var (
 	stream     bool         = false
 
 	socketUrl string
+	bj        string
 )
 
 func main() {
+	err := godotenv.Load()
+	if err != nil {
+		panic(err)
+	}
+
+	bj = os.Getenv("BJ_ID")
+
 	checkStream()
 }
 
