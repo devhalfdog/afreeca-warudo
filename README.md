@@ -1,3 +1,5 @@
+afreeca랑 warudo 연동 예제
+
 별풍선만 읽음. 채널포인트는 나중에.
 
 1. `afreeca-warudo.exe` 와 `.env` 를 다운로드받는다.
