@@ -44,15 +44,15 @@ func main() {
 
 func checkStream() {
 	for {
-		station, err := getStation()
+		streamNo, err := getStation()
 		if err != nil {
 			log.Println(err)
 		}
 
-		isLive := station.BroadNo != 0
+		isLive := streamNo != 0
 
 		if !stream && isLive {
-			err := watchChat(station)
+			err := watchChat()
 			if err != nil {
 				log.Println(err)
 			}
@@ -62,10 +62,10 @@ func checkStream() {
 	}
 }
 
-func getStation() (Station, error) {
+func getStation() (int, error) {
 	req, err := http.NewRequest("GET", fmt.Sprintf(stationUrl, bj), nil)
 	if err != nil {
-		return Station{}, err
+		return -1, err
 	}
 
 	req.Header.Add("Content-Type", "application/json")
@@ -73,29 +73,28 @@ func getStation() (Station, error) {
 
 	resp, err := client.Do(req)
 	if err != nil {
-		return Station{}, err
+		return -1, err
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != 200 {
-		return Station{}, fmt.Errorf("an unknown error occurred during the request: %d", resp.StatusCode)
+		return -1, fmt.Errorf("an unknown error occurred during the request: %d", resp.StatusCode)
 	}
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return Station{}, err
+		return -1, err
 	}
 
-	var station Station
 	result := gjson.GetBytes(body, "broad")
 
-	station.BroadNo = int(result.Get("broad_no").Int())
+	streamNo := int(result.Get("broad_no").Int())
 
-	return station, nil
+	return streamNo, nil
 }
 
-func watchChat(station Station) error {
-	token, err := setToken(station)
+func watchChat() error {
+	token, err := setToken()
 	if err != nil {
 		return err
 	}
@@ -130,7 +129,7 @@ func setupChat(token afreecachat.Token) error {
 	return chatClient.Connect()
 }
 
-func setToken(station Station) (afreecachat.Token, error) {
+func setToken() (afreecachat.Token, error) {
 	token := afreecachat.Token{
 		BJID: bj,
 		Flag: "524304",
