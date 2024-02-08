@@ -16,8 +16,6 @@ import (
 
 const (
 	stationUrl = "https://bjapi.afreecatv.com/api/%s/station"
-	infoUrl    = "https://api.m.afreecatv.com/broad/a/watch"
-	dataUrl    = "https://live.afreecatv.com/afreeca/player_live_api.php?bjid=%s"
 
 	userAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:121.0) Gecko/20100101 Firefox/121.0"
 )

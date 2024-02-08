@@ -2,7 +2,7 @@ module github.com/devhalfdog/afreeca-warudo
 
 go 1.21.6
 
-require github.com/devhalfdog/afreecachat v0.0.4
+require github.com/devhalfdog/afreecachat v0.0.5
 
 require (
 	github.com/tidwall/match v1.1.1 // indirect
