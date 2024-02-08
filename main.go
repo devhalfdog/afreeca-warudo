@@ -52,7 +52,7 @@ func checkStream() {
 		isLive := streamNo != 0
 
 		if !stream && isLive {
-			err := watchChat()
+			err := setupChat()
 			if err != nil {
 				log.Println(err)
 			}
@@ -93,16 +93,16 @@ func getStation() (int, error) {
 	return streamNo, nil
 }
 
-func watchChat() error {
-	token, err := setToken()
-	if err != nil {
-		return err
+func setupChat() error {
+	token := afreecachat.Token{
+		BJID: bj,
+		Flag: "524304",
 	}
 
-	return setupChat(token)
+	return chat(token)
 }
 
-func setupChat(token afreecachat.Token) error {
+func chat(token afreecachat.Token) error {
 	var err error
 	chatClient, err = afreecachat.NewClient(token)
 	if err != nil {
@@ -127,13 +127,4 @@ func setupChat(token afreecachat.Token) error {
 	})
 
 	return chatClient.Connect()
-}
-
-func setToken() (afreecachat.Token, error) {
-	token := afreecachat.Token{
-		BJID: bj,
-		Flag: "524304",
-	}
-
-	return token, nil
 }
