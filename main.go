@@ -5,10 +5,7 @@ import (
 	"io"
 	"log"
 	"net/http"
-	"net/url"
 	"os"
-	"strconv"
-	"strings"
 	"time"
 
 	"github.com/devhalfdog/afreecachat"
@@ -31,8 +28,7 @@ var (
 	client     *http.Client = &http.Client{Timeout: 5 * time.Second}
 	stream     bool         = false
 
-	socketUrl string
-	bj        string
+	bj string
 )
 
 func main() {
@@ -55,7 +51,7 @@ func checkStream() {
 			log.Println(err)
 		}
 
-		isLive := station.BroadTitle != ""
+		isLive := station.BroadNo != 0
 
 		if !stream && isLive {
 			err := watchChat(station)
@@ -96,35 +92,8 @@ func getStation() (Station, error) {
 	result := gjson.GetBytes(body, "broad")
 
 	station.BroadNo = int(result.Get("broad_no").Int())
-	station.BroadTitle = result.Get("broad_title").String()
 
 	return station, nil
-}
-
-func getChannelData(station Station) (ChatData, error) {
-	data := url.Values{}
-	data.Set("bid", bj)
-	data.Set("player_type", "html5")
-
-	resp, err := http.Post(fmt.Sprintf(dataUrl, bj), "application/x-www-form-urlencoded", strings.NewReader(data.Encode()))
-	if err != nil {
-		return ChatData{}, err
-	}
-	defer resp.Body.Close()
-
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return ChatData{}, err
-	}
-
-	var chatData ChatData
-	result := gjson.GetBytes(body, "CHANNEL")
-	chatData.URL = result.Get("CHDOMAIN").String()
-	chatData.Port = result.Get("CHPT").String()
-	chatData.ChatNo = result.Get("CHATNO").String()
-	chatData.FanTicket = result.Get("FTK").String()
-
-	return chatData, nil
 }
 
 func watchChat(station Station) error {
@@ -142,7 +111,6 @@ func setupChat(token afreecachat.Token) error {
 	if err != nil {
 		return err
 	}
-	chatClient.SocketAddress = socketUrl
 
 	chatClient.OnConnect(func(connect bool) {
 		if connect {
@@ -166,18 +134,9 @@ func setupChat(token afreecachat.Token) error {
 
 func setToken(station Station) (afreecachat.Token, error) {
 	token := afreecachat.Token{
+		BJID: bj,
 		Flag: "524304",
 	}
-
-	data, err := getChannelData(station)
-	if err != nil {
-		return afreecachat.Token{}, err
-	}
-
-	token.ChatRoom = data.ChatNo
-	port, _ := strconv.Atoi(data.Port)
-	port += 1
-	socketUrl = fmt.Sprintf("wss://%s:%d/Websocket", data.URL, port)
 
 	return token, nil
 }
