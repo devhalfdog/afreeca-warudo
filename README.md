@@ -1,3 +1,6 @@
+### 참고
+- [https://github.com/devhalfdog/afreecachat](https://github.com/devhalfdog/afreecachat)
+
 afreeca랑 warudo 연동 예제
 
 별풍선만 읽음. 채널포인트는 나중에.
